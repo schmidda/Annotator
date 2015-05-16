@@ -21,6 +21,7 @@ package annotator;
 import annotator.handler.AnnotatorGetHandler;
 import annotator.handler.AnnotatorPostHandler;
 import annotator.handler.AnnotatorDeleteHandler;
+import annotator.handler.AnnotatorPutHandler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import javax.servlet.http.HttpServletRequest;
@@ -73,6 +74,8 @@ public class JettyServer extends AbstractHandler
                     new AnnotatorGetHandler().handle( request, response, urn );
                 else if ( method.equals("POST") )
                     new AnnotatorPostHandler().handle( request, response, urn );
+                else if ( method.equals("PUT") )
+                    new AnnotatorPutHandler().handle( request, response, urn );
                 else if ( method.equals("DELETE") )
                     new AnnotatorDeleteHandler().handle( request, response, urn );
                 else

@@ -23,4 +23,5 @@ package annotator.constants;
  */
 public class Service {
     public static final String ANNOTATOR = "annotator";
+    public static final String DIFFS = "diffs";
 }

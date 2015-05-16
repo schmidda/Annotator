@@ -21,19 +21,43 @@ package annotator.handler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import annotator.exception.AnnotatorException;
-import calliope.core.Utils;
-
+import annotator.constants.Params;
+import annotator.constants.Database;
+import calliope.core.database.Connection;
+import calliope.core.database.Connector;
+import calliope.core.constants.JSONKeys;
+import java.util.Map;
+import java.util.Set;
+import java.util.Iterator;
 /**
  * Handle GET request for the MML service
  * @author desmond
  */
 public class AnnotatorGetHandler extends AnnotatorHandler {
+    Annotation annotation;
+    private void parseParams( HttpServletRequest request )
+    {
+        Map params = request.getParameterMap();
+        Set<String> keys = params.keySet();
+        Iterator<String> iter = keys.iterator();
+        annotation = new Annotation();
+        while ( iter.hasNext() )
+        {
+            String key = iter.next();
+            if ( key.equals(Params._ID) )
+                annotation.id = getStringParameter(key,params);
+        }
+    }
     public void handle(HttpServletRequest request,
-        HttpServletResponse response, String urn) throws AnnotatorException {
+        HttpServletResponse response, String urn) throws AnnotatorException 
+    {
         try {
-            String service = Utils.first(urn);
-            urn = Utils.pop(urn);
-            response.getWriter().write("GET");
+            parseParams(request);
+            Connection conn = Connector.getConnection();
+            String jdoc = conn.getFromDbByField(Database.ANNOTATIONS, 
+                annotation.id,JSONKeys._ID );
+            if ( jdoc != null )
+                response.getWriter().write(jdoc);
         } catch (Exception e) {
             throw new AnnotatorException(e);
         }

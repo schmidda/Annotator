@@ -17,7 +17,15 @@
  */
 
 package annotator.handler;
+import annotator.constants.Database;
+import annotator.constants.Params;
 import annotator.exception.*;
+import calliope.core.database.Connection;
+import calliope.core.database.Connector;
+import calliope.core.exception.DbException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,9 +35,34 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class AnnotatorDeleteHandler extends AnnotatorHandler
 {
+     String id;
+    private void getParameters( HttpServletRequest request )
+    {
+        Map params = request.getParameterMap();
+        Set<String> keys = params.keySet();
+        Iterator<String> iter = keys.iterator();
+        while ( iter.hasNext() )
+        {
+            String key = iter.next();
+            if ( key.equals(Params._ID) )
+                this.id = getStringParameter(key,params);
+        }
+    }
     public void handle( HttpServletRequest request, 
         HttpServletResponse response, String urn ) throws AnnotatorException
     {
-        System.out.println("DELETE");
+        try
+        {
+            getParameters(request);
+            if ( id != null )
+            {
+                Connection conn = Connector.getConnection();
+                conn.removeFromDbByField(Database.ANNOTATIONS, Params._ID, id );
+            }
+        }
+        catch ( DbException dbe )
+        {
+            throw new AnnotatorException(dbe);
+        }
     }
 }

@@ -17,17 +17,45 @@
  */
 package annotator.handler;
 
-import calliope.core.Utils;
+import annotator.constants.Database;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import annotator.exception.AnnotatorException;
+import annotator.constants.Params;
+import calliope.core.database.Connector;
+import calliope.core.database.Connection;
+import java.util.Map;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
- * Post methods for annotator.
+ * Add new annotations.
  * @author desmond
  */
 public class AnnotatorPostHandler extends AnnotatorHandler 
 {
+    Annotation annotation;
+    private void getParameters( HttpServletRequest request )
+    {
+        Map params = request.getParameterMap();
+        Set<String> keys = params.keySet();
+        Iterator<String> iter = keys.iterator();
+        annotation = new Annotation();
+        while ( iter.hasNext() )
+        {
+            String key = iter.next();
+            if ( key.equals(Params.BODY) )
+                annotation.body = getStringParameter(Params.BODY,params);
+            else if ( key.equals(Params.DOCID) )
+                annotation.docid = getStringParameter(Params.DOCID,params);
+            else if ( key.equals(Params.VERSION1) )
+                annotation.version1 = getStringParameter(Params.VERSION1,params);
+            else if ( key.equals(Params.OFFSET) )
+                annotation.offset = getIntParameter(Params.OFFSET,params);
+            else if ( key.equals(Params.LENGTH) )
+                annotation.length = getIntParameter(Params.LENGTH,params);
+        }
+    }
     /**
      * Handle a POST request
      * @param request the raw request
@@ -40,9 +68,11 @@ public class AnnotatorPostHandler extends AnnotatorHandler
     {
         try
         {
-            String service = Utils.first(urn);
-            urn = Utils.pop(urn);
-            response.getWriter().write("POST");
+            Connection conn = Connector.getConnection();
+            getParameters(request);
+            conn.putToDb( Database.ANNOTATIONS, annotation.docid, 
+                annotation.toJSONString() );
+            response.getWriter().write(annotation.toString());
         }
         catch ( Exception e )
         {

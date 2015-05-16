@@ -16,7 +16,6 @@
  *  (c) copyright Desmond Schmidt 2015
  */
 
-
 package annotator;
 
 import calliope.core.exception.CalliopeException;
@@ -36,7 +35,9 @@ import annotator.handler.AnnotatorPostHandler;
 import annotator.exception.AnnotatorException;
 
 /**
- *
+ * Tomcat web application version of Annotator. Coexists with JettyServer 
+ * and runs on port 8080 instead of its own private port. This way 
+ * we can add services to 
  * @author desmond
  */
 public class AnnotatorWebApp extends HttpServlet

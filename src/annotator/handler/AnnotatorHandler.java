@@ -21,6 +21,7 @@ package annotator.handler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import annotator.exception.AnnotatorException;
+import java.util.Map;
 
 /**
  * Abstract super-class for all handlers: PUT, POST, DELETE, GET
@@ -29,4 +30,19 @@ import annotator.exception.AnnotatorException;
 public abstract class AnnotatorHandler {
  public abstract void handle( HttpServletRequest request, 
         HttpServletResponse response, String urn ) throws AnnotatorException;   
+    protected String getStringParameter( String key, Map params )
+    {
+        if ( params.containsKey(key) )
+            return ((String[])params.get(key))[0];
+        else
+            return "";
+    }
+    protected int getIntParameter( String key, Map params )
+    {
+        if ( params.containsKey(key) )
+            return Integer.parseInt(((String[])params.get(key))[0]);
+        else
+            return 0;
+    }
+    
 }
